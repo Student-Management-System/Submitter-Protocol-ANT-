@@ -15,7 +15,7 @@ import org.junit.runners.Parameterized.Parameters;
 
 
 /**
- * Unittests for the semester calculation.
+ * Thie class declares unit tests for the {@link SemesterUtils} class.
  * 
  * @author Kunold
  *
@@ -29,7 +29,7 @@ public class SemesterUtilsTest {
     private int month;
     
     /**
-     * The expected Semster.
+     * The expected semester.
      */
     private String expectedSemester;
     
@@ -45,23 +45,23 @@ public class SemesterUtilsTest {
     @Parameters(name = "Month {0} -> {1}")
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][] {
-            {Calendar.JANUARY, "WiSe1920"},
-            {Calendar.FEBRUARY, "WiSe1920"},
-            {Calendar.MARCH, "WiSe1920"},
-            {Calendar.APRIL, "SoSe20"},
-            {Calendar.MAY, "SoSe20"},
-            {Calendar.JUNE, "SoSe20"},
-            {Calendar.JULY, "SoSe20"},
-            {Calendar.AUGUST, "SoSe20"},
-            {Calendar.SEPTEMBER, "SoSe20"},
-            {Calendar.OCTOBER, "WiSe2021"},
-            {Calendar.NOVEMBER, "WiSe2021"},
-            {Calendar.DECEMBER, "WiSe2021"}
+            {Calendar.JANUARY, "wise1920"},
+            {Calendar.FEBRUARY, "wise1920"},
+            {Calendar.MARCH, "wise1920"},
+            {Calendar.APRIL, "sose20"},
+            {Calendar.MAY, "sose20"},
+            {Calendar.JUNE, "sose20"},
+            {Calendar.JULY, "sose20"},
+            {Calendar.AUGUST, "sose20"},
+            {Calendar.SEPTEMBER, "sose20"},
+            {Calendar.OCTOBER, "wise2021"},
+            {Calendar.NOVEMBER, "wise2021"},
+            {Calendar.DECEMBER, "wise2021"}
             });        
     }
     
     /**
-     * Method to run all tests.
+     * Method to run all tests and set the Year for the test to 2020.
      */
     @Test
     public void test() {

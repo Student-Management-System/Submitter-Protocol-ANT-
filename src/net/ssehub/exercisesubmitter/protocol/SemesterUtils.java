@@ -9,11 +9,6 @@ import java.util.Calendar;
  *
  */
 public class SemesterUtils {
-    
-//    public static class Semester {
-//        private String restName;
-//        private String displayName;
-//    }
 
     /**
      * The actual semester.
@@ -39,18 +34,18 @@ public class SemesterUtils {
     }
     
     /**
-     * Getter for the current semester.
+     * Getter for the current semester. Calculates the current semester with the actual date.
      * @return The current semester as String.
      */
     public static String getSemester() {
         
         if(calendar.get(Calendar.MONTH) >= Calendar.APRIL && calendar.get(Calendar.MONTH) <= Calendar.SEPTEMBER) {
-            semester = "SoSe" + formateDate(calendar.get(Calendar.YEAR));
+            semester = "sose" + formateDate(calendar.get(Calendar.YEAR));
         } else {
             if (calendar.get(Calendar.MONTH) >= Calendar.JANUARY && calendar.get(Calendar.MONTH) <= Calendar.MARCH) {
-                semester = "WiSe" + formateDate(calendar.get(Calendar.YEAR) - 1) + formateDate(calendar.get(Calendar.YEAR)); 
+                semester = "wise" + formateDate(calendar.get(Calendar.YEAR) - 1) + formateDate(calendar.get(Calendar.YEAR)); 
             } else {
-                semester = "WiSe" + formateDate(calendar.get(Calendar.YEAR)) + (formateDate(calendar.get(Calendar.YEAR) + 1));
+                semester = "wise" + formateDate(calendar.get(Calendar.YEAR)) + (formateDate(calendar.get(Calendar.YEAR) + 1));
             }
             
         }
@@ -59,7 +54,7 @@ public class SemesterUtils {
     }
     
     /**
-     * Helper method to calculate the last two digits of a year for the semester.
+     * Helper method to get only the last two digits of a year for the semester.
      * @param year the year of the semester.
      * @return the last two digits of the year.
      */
