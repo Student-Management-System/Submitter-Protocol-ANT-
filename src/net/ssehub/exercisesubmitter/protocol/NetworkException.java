@@ -13,6 +13,10 @@ public abstract class NetworkException extends Exception {
      */
     private static final long serialVersionUID = 1795210885665078124L;
 
+    /**
+     * A Exception that occurs when network problems occur.
+     * @param message The error message of the Exception that occurred.
+     */
     public NetworkException(String message) {
         super(message);
     }

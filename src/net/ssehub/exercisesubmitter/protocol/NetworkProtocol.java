@@ -107,7 +107,7 @@ public class NetworkProtocol {
 	public List<CourseDto> getCourses(String userID) throws NetworkException {
 		try {
 		    // "c290382b-8df7-409d-b6d8-719ed1a5c109"
-		    // test user no longer exists, was very dirty to hardcode it xD
+		    // test user no longer exists
             courses = apiUser.getCoursesOfUser(userID);
 		} catch (IllegalArgumentException e) {
 		    throw new ServerNotFoundException(e.getMessage(), basePath);
@@ -142,7 +142,7 @@ public class NetworkProtocol {
 	
 	/**
 	 * Getter for all assignments of a course.
-	 * @param courseID The id of the course where the assignments are requested.
+	 * @param courseID The id of the course where the assignments are requested for.
 	 * @return the assignments of a course.
 	 * @throws NetworkException when network problems occur.
 	 */

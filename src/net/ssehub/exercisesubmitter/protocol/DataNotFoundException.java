@@ -1,5 +1,11 @@
 package net.ssehub.exercisesubmitter.protocol;
 
+/**
+ * Declares an exception for the case, that a requested data tape is not found.
+ * 
+ * @author Kunold
+ *
+ */
 public class DataNotFoundException extends NetworkException {
     
     /**
@@ -30,6 +36,12 @@ public class DataNotFoundException extends NetworkException {
      */
     private String item;
 
+    /**
+     * A Exception that occurs, when any kind of data is not found.
+     * @param message The error message of the Exception.
+     * @param item The item for that the data is not found.
+     * @param type The type of data that is not found.
+     */
     public DataNotFoundException(String message, String item, DataType type) {
         super(message);
         this.type = type;
