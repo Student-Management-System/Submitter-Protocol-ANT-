@@ -7,6 +7,7 @@ import io.swagger.client.ApiClient;
 import io.swagger.client.ApiException;
 import io.swagger.client.api.CoursesApi;
 import io.swagger.client.api.UsersApi;
+import io.swagger.client.model.AssessmentDto;
 import io.swagger.client.model.AssignmentDto;
 import io.swagger.client.model.CourseDto;
 import io.swagger.client.model.GroupDto;
@@ -49,7 +50,7 @@ public class NetworkProtocol {
 	/**
 	 * The ID of a course.
 	 */
-	private String courseID;
+	private String courseId;
 	
 	/**
 	 * A list of the courses.
@@ -57,14 +58,19 @@ public class NetworkProtocol {
 	private List<CourseDto> courses = new ArrayList<>();
 	
 	/**
-	 * A group.
+	 * A list of the groups.
 	 */
-	private GroupDto groups;
+	private List<GroupDto> groups = new ArrayList<>();
 	
 	/**
 	 * A list of the assignments.
 	 */
 	private List<AssignmentDto> assignments = new ArrayList<>();
+	
+	/**
+	 * A list of all assessments.
+	 */
+	private List<AssessmentDto> assessments = new ArrayList<>();
 	
 	/**
 	 * The constructor of the class.
@@ -86,33 +92,34 @@ public class NetworkProtocol {
 	 * @throws NetworkException when network problems occur.
 	 */
 	public String getCourseID() throws NetworkException{
-	    CourseDto c;
-	    try {
-            c = apiCourse.getCourseByNameAndSemester(courseName, SemesterUtils.getSemester());
-            courseID = c.getId();
-        } catch (IllegalArgumentException e) {
-            throw new ServerNotFoundException(e.getMessage(), basePath);
-        } catch (ApiException e) {
-            throw new DataNotFoundException("Course not found", courseName, DataType.COURSE_NOT_FOUND);
-        }
+	    if(courseId == null || courseId.isEmpty()) {
+	        
+	        try {
+	            CourseDto course = apiCourse.getCourseByNameAndSemester(courseName, SemesterUtils.getSemester());
+	            courseId = course.getId();
+	        } catch (IllegalArgumentException e) {
+	            throw new ServerNotFoundException(e.getMessage(), basePath);
+	        } catch (ApiException e) {
+	            throw new DataNotFoundException("Course not found", courseName, DataType.COURSE_NOT_FOUND);
+	        }
+	    }
 	    	    
-	    return courseID;
+	    return courseId;
 	}
 	
 	/**
 	 * Getter for the Courses of a user.
+	 * @param userID The id of the user whose course is requested.
 	 * @return A List of all courses from the user (will never be <tt>null</tt>).
 	 * @throws NetworkException when network problems occur.
 	 */
-	public List<CourseDto> getCourses(String userID) throws NetworkException {
+	public List<CourseDto> getCourses(String userId) throws NetworkException {
 		try {
-		    // "c290382b-8df7-409d-b6d8-719ed1a5c109"
-		    // test user no longer exists
-            courses = apiUser.getCoursesOfUser(userID);
+            courses = apiUser.getCoursesOfUser(userId);
 		} catch (IllegalArgumentException e) {
 		    throw new ServerNotFoundException(e.getMessage(), basePath);
         } catch (ApiException e) {
-            throw new DataNotFoundException("User not found", userID, DataType.USER_NOT_FOUND);
+            throw new DataNotFoundException("User not found", userId, DataType.USER_NOT_FOUND);
         }
 		
 		if (null == courses) {
@@ -128,13 +135,13 @@ public class NetworkProtocol {
 	 * @return the group of a user.
 	 * @throws NetworkException when network problems occur.
 	 */
-	public GroupDto getGroup(String userID) throws NetworkException {
+	public List<GroupDto> getGroups(String userId) throws NetworkException {
 	    try {
-            groups = apiUser.getGroupOfUserForCourse(userID, getCourseID());
+            groups = apiUser.getGroupsOfUserForCourse(userId, getCourseID());
         } catch (IllegalArgumentException e) {
             throw new ServerNotFoundException(e.getMessage(), basePath);
         } catch (ApiException e) {
-            throw new DataNotFoundException("Group not found", userID, DataType.GROUP_NOT_FOUND);
+            throw new DataNotFoundException("Group not found", userId, DataType.GROUP_NOT_FOUND);
         }
 	    
 	    return groups;
@@ -142,17 +149,17 @@ public class NetworkProtocol {
 	
 	/**
 	 * Getter for all assignments of a course.
-	 * @param courseID The id of the course where the assignments are requested for.
-	 * @return the assignments of a course.
+	 * @param courseId The id of the course where the assignments are requested for.
+	 * @return the assignments of a course (will never be <tt>null</tt>).
 	 * @throws NetworkException when network problems occur.
 	 */
-	public List<AssignmentDto> getAssignments(String courseID) throws NetworkException {
+	public List<AssignmentDto> getAssignments() throws NetworkException {
 	    try {
-            assignments = apiCourse.getAssignmentsOfCourse(courseID);
+            assignments = apiCourse.getAssignmentsOfCourse(getCourseID());
         } catch (IllegalArgumentException e) {
             throw new ServerNotFoundException(e.getMessage(), basePath);
         } catch (ApiException e) {
-            throw new DataNotFoundException("Assignment not found", courseID, DataType.ASSIGNMENT_NOT_FOUND);
+            throw new DataNotFoundException("Assignment not found", getCourseID(), DataType.ASSIGNMENTS_NOT_FOUND);
         }
 	    
 	    if (null == assignments) {
@@ -160,6 +167,28 @@ public class NetworkProtocol {
 	    }
 	    
 	    return assignments;
+	}
+	
+	/**
+	 * Getter for the Assessments of a user.
+	 * @param userId The user whose assessments are requested.
+	 * @return The Assessments from a user (will never be <tt>null</tt>).
+	 * @throws NetworkException when network problems occur.
+	 */
+	public List<AssessmentDto> getAssessmentsWithGroups(String userId) throws NetworkException {
+	    try {
+	        assessments = apiUser.getAssessmentsWithGroupsOfUserForCourse(userId, getCourseID());
+	    } catch (IllegalArgumentException e) {
+	        throw new ServerNotFoundException(e.getMessage(), basePath);
+	    } catch (ApiException e) {
+	        throw new DataNotFoundException("Assessments not found", userId, DataType.ASSESSMENTS_NOT_FOUND);
+	    }
+	    
+	    if (null == assessments) {
+	        assessments = new ArrayList<>();
+	    }
+	    
+	    return assessments;
 	}
 	
 	// temporary main method to test stuff.
