@@ -5,6 +5,7 @@ import java.util.List;
 
 import io.swagger.client.ApiClient;
 import io.swagger.client.ApiException;
+import io.swagger.client.api.AssignmentsApi;
 import io.swagger.client.api.CoursesApi;
 import io.swagger.client.api.UsersApi;
 import io.swagger.client.model.AssessmentDto;
@@ -35,6 +36,12 @@ public class NetworkProtocol {
 	 * The API to get the course informations.
 	 */
 	private CoursesApi apiCourse;
+	
+	
+	/**
+	 * The API to get the assignments informations.
+	 */
+	private AssignmentsApi apiAssignments;
 	
 	/**
 	 * The name of the course that uses the exercise submitter.
@@ -82,6 +89,7 @@ public class NetworkProtocol {
         apiClient.setBasePath(basePath);
         apiUser = new UsersApi(apiClient);
         apiCourse = new CoursesApi(apiClient);
+        apiAssignments = new AssignmentsApi(apiClient);
 		this.courseName = courseName;
 		this.basePath = basePath;
 	}
@@ -155,7 +163,7 @@ public class NetworkProtocol {
 	 */
 	public List<AssignmentDto> getAssignments() throws NetworkException {
 	    try {
-            assignments = apiCourse.getAssignmentsOfCourse(getCourseID());
+            assignments = apiAssignments.getAssignmentsOfCourse(getCourseID());
         } catch (IllegalArgumentException e) {
             throw new ServerNotFoundException(e.getMessage(), basePath);
         } catch (ApiException e) {
