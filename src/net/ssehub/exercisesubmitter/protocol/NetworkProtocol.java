@@ -1,7 +1,9 @@
 package net.ssehub.exercisesubmitter.protocol;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import io.swagger.client.ApiClient;
 import io.swagger.client.ApiException;
@@ -10,6 +12,7 @@ import io.swagger.client.api.CoursesApi;
 import io.swagger.client.api.UsersApi;
 import io.swagger.client.model.AssessmentDto;
 import io.swagger.client.model.AssignmentDto;
+import io.swagger.client.model.AssignmentDto.StateEnum;
 import io.swagger.client.model.CourseDto;
 import io.swagger.client.model.GroupDto;
 import net.ssehub.exercisesubmitter.protocol.DataNotFoundException.DataType;
@@ -198,6 +201,28 @@ public class NetworkProtocol {
 	    
 	    return assessments;
 	}
+	
+	/**
+	 * Returns a map of all specified submissions and their permissions.<br>
+	 * This is a 2-tuple in the form of <tt>(assignment name, permission)</tt>.
+	 * The <tt>assignment name</tt> is also used as top level folder inside the repostory to store all submissions
+	 * related to the assignment.
+	 * @return A map of all <tt>(assignment name, permission)</tt>s, won't be <tt>null</tt>.
+	 */
+	public Map<String, StateEnum> readPermissions() {
+        Map<String, StateEnum> assignments = new HashMap<>();
+        
+        try {
+            for (AssignmentDto dto : getAssignments()) {
+                assignments.put(dto.getName(), dto.getState());
+            }
+        } catch (NetworkException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        
+        return assignments;
+    }
 	
 	// temporary main method to test stuff.
 	public static void main(String[] args) {
