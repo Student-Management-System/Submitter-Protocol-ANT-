@@ -22,6 +22,10 @@ public class NetworkProtocolTest {
      * The url of the test server.
      */
     public static final String TEST_SERVER = "http://147.172.178.30:3000";
+    
+    public static final String TEST_COURSE_ID = "java";
+    public static final String TEST_USER_ID = "a019ea22-5194-4b83-8d31-0de0dc9bca53";
+    public static final String TEST_SEMESTER = "wise1920";
 
     /**
      * Test if the REST server is not found.
@@ -35,7 +39,7 @@ public class NetworkProtocolTest {
         } catch (ServerNotFoundException e) {
             Assert.assertEquals("NON_EXISTING_SERVER", e.getURL());
         } catch (NetworkException e) {
-            Assert.fail("Unexpected Exception returned.");
+            Assert.fail("Unexpected NetworkException returned: " + e.getMessage());
         }
     }
     
@@ -45,12 +49,13 @@ public class NetworkProtocolTest {
     @Test
     public void testGetCourseID() {
         // probably a bit dirty to hardcode the courseName.
-        NetworkProtocol np = new NetworkProtocol(TEST_SERVER, "java");
+        NetworkProtocol np = new NetworkProtocol(TEST_SERVER, TEST_COURSE_ID);
+        np.setSemester(TEST_SEMESTER);
         try {
             String course = np.getCourseID();
             Assert.assertFalse("No course found", course.isEmpty());
         } catch (NetworkException e) {
-            Assert.fail("Unexpected Exception returned.");
+            Assert.fail("Unexpected NetworkException returned: " + e.getMessage());
         }
     }
     
@@ -59,13 +64,14 @@ public class NetworkProtocolTest {
      */
     @Test
     public void testListOfCourses() {
-        NetworkProtocol np = new NetworkProtocol(TEST_SERVER, "a_course");
+        NetworkProtocol np = new NetworkProtocol(TEST_SERVER, TEST_COURSE_ID);
+        np.setSemester(TEST_SEMESTER);
         try {
-            List<CourseDto> courses = np.getCourses("userID");
+            List<CourseDto> courses = np.getCourses(TEST_USER_ID);
             Assert.assertNotNull("Course list was null, but should never be null.", courses);
             Assert.assertFalse("List of courses was empty", courses.isEmpty());
         } catch (NetworkException e) {
-            Assert.fail("Unexpected Exception returned.");
+            Assert.fail("Unexpected NetworkException returned: " + e.getMessage());
         }
     }
     
@@ -74,13 +80,14 @@ public class NetworkProtocolTest {
      */
     @Test
     public void testGetGroup() {
-        NetworkProtocol np = new NetworkProtocol(TEST_SERVER, "a_course");
+        NetworkProtocol np = new NetworkProtocol(TEST_SERVER, TEST_COURSE_ID);
+        np.setSemester(TEST_SEMESTER);
         try {
-            List<GroupDto> groups = np.getGroups("id");
+            List<GroupDto> groups = np.getGroups(TEST_USER_ID);
             Assert.assertNotNull("Group list was null, but should never be null.", groups);
             Assert.assertFalse("List of groups was empty", groups.isEmpty());
         } catch (NetworkException e) {
-            Assert.fail("Unexpected Exception returned.");
+            Assert.fail("Unexpected NetworkException returned: " + e.getMessage());
         }
     }
     
@@ -88,14 +95,15 @@ public class NetworkProtocolTest {
      * Test if a List of assignments is returned.
      */
     @Test
-    public void testGetfAssignments() {
-        NetworkProtocol np = new NetworkProtocol(TEST_SERVER, "a_course");
+    public void testGetAssignments() {
+        NetworkProtocol np = new NetworkProtocol(TEST_SERVER, TEST_COURSE_ID);
+        np.setSemester(TEST_SEMESTER);
         try {
             List<AssignmentDto> assignments = np.getAssignments();
             Assert.assertNotNull("Assignment list was null, but should never be null.", assignments);
             Assert.assertFalse("List of assignments was empty", assignments.isEmpty());
         } catch (NetworkException e) {
-            Assert.fail("Unexpected Exception returned.");
+            Assert.fail("Unexpected NetworkException returned: " + e.getMessage());
         }  
     }
     
@@ -104,13 +112,14 @@ public class NetworkProtocolTest {
      */
     @Test
     public void testGetAssessmentsWithGoups() {
-        NetworkProtocol np = new NetworkProtocol(TEST_SERVER, "a_course");
+        NetworkProtocol np = new NetworkProtocol(TEST_SERVER, TEST_COURSE_ID);
+        np.setSemester(TEST_SEMESTER);
         try {
-            List<AssessmentDto> assessments = np.getAssessmentsWithGroups("");
+            List<AssessmentDto> assessments = np.getAssessmentsWithGroups(TEST_USER_ID);
             Assert.assertNotNull("Assessment list was null, but should never be null.", assessments);
             Assert.assertFalse("List of assessments was empty", assessments.isEmpty());
         } catch (NetworkException e) {
-            Assert.fail("Unexpected Exception returned");
+            Assert.fail("Unexpected NetworkException returned: " + e.getMessage());
         }
     }
 

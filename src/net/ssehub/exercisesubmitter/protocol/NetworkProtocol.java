@@ -53,6 +53,11 @@ public class NetworkProtocol {
 	private String courseName;
 	
 	/**
+	 * Semester should start with 4 lower case letters and do not contain a dash or whitespace.
+	 */
+	private String semester;
+	
+	/**
 	 * The base Path to the REST server.
 	 */
 	private String basePath;
@@ -93,8 +98,17 @@ public class NetworkProtocol {
         apiUser = new UsersApi(apiClient);
         apiCourse = new CoursesApi(apiClient);
         apiAssignments = new AssignmentsApi(apiClient);
+        semester = SemesterUtils.getSemester();
 		this.courseName = courseName;
 		this.basePath = basePath;
+	}
+	
+	/**
+	 * Used to select the semester.
+	 * @param semester The semester to use (four lower case letters + 2 digits).
+	 */
+	public void setSemester(String semester) {
+	    this.semester = semester;
 	}
 	
 	/**
@@ -106,7 +120,7 @@ public class NetworkProtocol {
 	    if(courseId == null || courseId.isEmpty()) {
 	        
 	        try {
-	            CourseDto course = apiCourse.getCourseByNameAndSemester(courseName, SemesterUtils.getSemester());
+	            CourseDto course = apiCourse.getCourseByNameAndSemester(courseName, semester);
 	            courseId = course.getId();
 	        } catch (IllegalArgumentException e) {
 	            throw new ServerNotFoundException(e.getMessage(), basePath);
