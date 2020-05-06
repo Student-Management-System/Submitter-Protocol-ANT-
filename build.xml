@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Author: Sascha El-Sharkawy -->
+<project name="Submitter-Protocol" default="jenkins" basedir="." xmlns:jacoco="antlib:org.jacoco.ant" xmlns:cs="antlib:com.puppycrawl.tools.checkstyle.ant">
+	<description>Java network protocol for the ExerciseSubmitter and ExerciseReviewer tools.</description>
+
+	<loadproperties srcfile="${basedir}/build.properties" />
+
+	<path id="classpath.project">
+		<pathelement location="${classes.dir}" />
+		<pathelement location="${res.dir}" />
+		<fileset dir="${lib.dir}" />
+	</path>
+
+	<!--
+	    Requires that the contents of https://projects.sse.uni-hildesheim.de/tools/ant-lib.zip
+	    exist at <user_home>/.ant/lib
+	    The "build.dependencies.download" target automatically does this. 
+	    To execute this script from Eclipse, it is required that the jars in this folder are also added via:
+	    Window -> Preferences -> Ant -> Runtime -> Global Entries -> Add External JARs...
+	  -->
+	<path id="classpath.testing">
+		<pathelement location="${classes.dir}" />
+		<pathelement location="${test.classes.dir}" />
+		<fileset dir="${lib.dir}" />
+
+		<!-- Add test source directory, since there may be test-specifc resources -->
+		<pathelement location="${test.dir}" />
+
+		<!-- Loads Junit from ANT installation folder -->
+		<fileset dir="${user.home.lib}">
+			<include name="junit*.jar" />
+			<include name="hamcrest*.jar" />
+		</fileset>
+	</path>
+
+	<!-- Check if required jar files are available in <user_home>/.ant/lib -->
+	<target name="build.dependencies.check">
+		<mkdir dir="${user.home.lib}" />
+		<condition property="build.dependencies.exist">
+			<and>
+				<resourcecount when="greater" count="0">
+					<fileset dir="${user.home.lib}" includes="junit*.jar" />
+				</resourcecount>
+				<resourcecount when="greater" count="0">
+					<fileset dir="${user.home.lib}" includes="hamcrest*.jar" />
+				</resourcecount>
+				<resourcecount when="greater" count="0">
+					<fileset dir="${user.home.lib}" includes="jacocoant*.jar" />
+				</resourcecount>
+				<resourcecount when="greater" count="0">
+					<fileset dir="${user.home.lib}" includes="checkstyle*.jar" />
+				</resourcecount>
+			</and>
+		</condition>
+	</target>
+
+	<!-- Download build dependencies and move them to <user_home>/.ant/lib (may require that ant is restarted) -->
+	<target name="build.dependencies.download" unless="${build.dependencies.exist}" depends="build.dependencies.check">
+		<get src="https://projects.sse.uni-hildesheim.de/tools/ant-lib.zip" dest="ant-lib.zip" />
+		<mkdir dir="${user.home.lib}" />
+		<unzip src="ant-lib.zip" dest="${user.home.lib}" />
+		<delete file="ant-lib.zip" />
+	</target>
+
+	<target name="prepare" depends="build.dependencies.download">
+		<delete dir="${build.dir}" />
+
+		<mkdir dir="${lib.dir}" />
+		<mkdir dir="${build.dir}" />
+		<mkdir dir="${jar.dir}" />
+		<mkdir dir="${classes.dir}" />
+		<mkdir dir="${test.classes.dir}" />
+		<mkdir dir="${dependencies.dir}" />
+		<mkdir dir="${reports.xml.dir}" />
+	</target>
+
+	<target name="compile">
+		<!-- compile java-classes -->
+		<javac srcdir="${src.dir}" destdir="${classes.dir}" debug="yes" includeantruntime="false">
+			<classpath refid="classpath.project" />
+		</javac>
+	</target>
+
+	<target name="test.compile">
+		<javac destdir="${test.classes.dir}" debug="yes" includeantruntime="false">
+			<src path="${test.dir}" />
+			<classpath refid="classpath.testing" />
+		</javac>
+	</target>
+
+	<target name="test" depends="test.compile">
+		<!-- Copy testdata, otherwise they won't be found during the test execution -->
+		<copy todir="${test.classes.dir}/testdata">
+			<fileset dir="testdata" />
+		</copy>
+
+		<taskdef uri="antlib:org.jacoco.ant" resource="org/jacoco/ant/antlib.xml" />
+		<jacoco:coverage destfile="${reports.dir}/jacoco.exec">
+			<junit fork="yes" dir="${test.classes.dir}" failureProperty="test.failed">
+				<classpath refid="classpath.testing" />
+
+				<formatter type="xml" />
+				<test name="${testcase}" todir="${reports.xml.dir}" if="testcase" />
+				<batchtest todir="${reports.xml.dir}" unless="testcase">
+					<!-- include all Tests -->
+					<fileset dir="${test.dir}">
+						<include name="**/AllTests.java" />
+					</fileset>
+
+					<!-- include all resources from the src-package-folders -->
+					<fileset dir="${src.dir}">
+						<exclude name="**/*.java" />
+					</fileset>
+				</batchtest>
+			</junit>
+		</jacoco:coverage>
+	</target>
+
+	<target name="jar">
+		<jar destfile="${jar.dir}/${jar.filename}" duplicate="preserve">
+			<fileset dir="${classes.dir}" excludes="**/package-info.class" />
+			<fileset dir="${src.dir}" excludes="**/package-info.java" />
+			<fileset dir="${res.dir}" excludes="**/package-info.java" erroronmissingdir="false" />
+
+			<!-- Automatically include all libraries from lib/include folder -->
+			<zipgroupfileset dir="${lib.dir}/include" includes="*.jar" erroronmissingdir="false" />
+
+			<fileset file="${basedir}/LICENSE" casesensitive="false" />
+		</jar>
+	</target>
+
+	<target name="checkstyle">
+		<taskdef resource="com/puppycrawl/tools/checkstyle/ant/checkstyle-ant-task.properties" />
+
+		<checkstyle config="${basedir}/checkstyle.xml" failOnViolation="false">
+			<fileset dir="${src.dir}" includes="**/*.java" />
+			<formatter type="plain" />
+			<formatter type="xml" toFile="build/reports/xml/checkstyle_errors.xml" />
+		</checkstyle>
+	</target>
+
+	<target name="test.report">
+		<taskdef uri="antlib:org.jacoco.ant" resource="org/jacoco/ant/antlib.xml" />
+		<jacoco:report>
+			<executiondata>
+				<file file="${reports.dir}/jacoco.exec" />
+			</executiondata>
+
+			<structure name="${ant.project.name}">
+				<classfiles>
+					<fileset dir="${classes.dir}" />
+				</classfiles>
+				<sourcefiles encoding="UTF-8">
+					<fileset dir="${src.dir}" />
+				</sourcefiles>
+			</structure>
+		</jacoco:report>
+	</target>
+
+	<target name="jenkins">
+		<antcall target="prepare" />
+		<antcall target="compile" />
+		<antcall target="test.compile" />
+		<antcall target="test" />
+		<antcall target="test.report" />
+		<antcall target="jar" />
+	</target>
+</project>
