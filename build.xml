@@ -90,10 +90,10 @@
 	</target>
 
 	<target name="test" depends="test.compile">
-		<!-- Copy testdata, otherwise they won't be found during the test execution -->
+		<!-- Copy testdata, otherwise they won't be found during the test execution
 		<copy todir="${test.classes.dir}/testdata">
 			<fileset dir="testdata" />
-		</copy>
+		</copy>  -->
 
 		<taskdef uri="antlib:org.jacoco.ant" resource="org/jacoco/ant/antlib.xml" />
 		<jacoco:coverage destfile="${reports.dir}/jacoco.exec">
