@@ -2,12 +2,14 @@ package net.ssehub.exercisesubmitter.protocol;
 
 
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Test;
 
 import io.swagger.client.model.AssessmentDto;
 import io.swagger.client.model.AssignmentDto;
+import io.swagger.client.model.AssignmentDto.StateEnum;
 import io.swagger.client.model.CourseDto;
 import io.swagger.client.model.GroupDto;
 
@@ -121,6 +123,18 @@ public class NetworkProtocolTest {
         } catch (NetworkException e) {
             Assert.fail("Unexpected NetworkException returned: " + e.getMessage());
         }
+    }
+    
+    /**
+     * Test if a Map of assignments of all specified submissions and their permissions is returned.
+     */
+    @Test
+    public void testReadPermissions() {
+        NetworkProtocol np = new NetworkProtocol(TEST_SERVER, TEST_COURSE_ID);
+        np.setSemester(TEST_SEMESTER);
+        Map <String, StateEnum> assignments = np.readPermissions();
+        Assert.assertNotNull("Assignment map was null, but should never be null.", assignments);
+        Assert.assertFalse("Map of assignments was empty", assignments.isEmpty());
     }
 
 }
