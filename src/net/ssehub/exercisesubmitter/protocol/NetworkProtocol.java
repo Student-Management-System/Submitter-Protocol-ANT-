@@ -28,7 +28,7 @@ public class NetworkProtocol {
     /**
      * The ApiClient enables to set a BasePath for the other API`s.
      */
-    private ApiClient apiClient;
+    protected ApiClient apiClient;
     
 	/**
 	 * The API of the user informations.
@@ -50,7 +50,7 @@ public class NetworkProtocol {
 	 * The name of the course that uses the exercise submitter.
 	 * Will be read from the config File.
 	 */
-	private String courseName;
+	protected String courseName;
 	
 	/**
 	 * Semester should start with 4 lower case letters and do not contain a dash or whitespace.
@@ -60,7 +60,7 @@ public class NetworkProtocol {
 	/**
 	 * The base Path to the REST server.
 	 */
-	private String basePath;
+	protected String basePath;
 	
 	/**
 	 * The ID of a course.
