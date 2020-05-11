@@ -50,7 +50,6 @@ public class NetworkProtocolTest {
      */
     @Test
     public void testGetCourseID() {
-        // probably a bit dirty to hardcode the courseName.
         NetworkProtocol np = new NetworkProtocol(TEST_SERVER, TEST_COURSE_ID);
         np.setSemester(TEST_SEMESTER);
         try {
