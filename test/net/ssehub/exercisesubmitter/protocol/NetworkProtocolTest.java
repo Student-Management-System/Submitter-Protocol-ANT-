@@ -11,7 +11,6 @@ import org.junit.Test;
 import io.swagger.client.model.AssessmentDto;
 import io.swagger.client.model.AssignmentDto;
 import io.swagger.client.model.AssignmentDto.StateEnum;
-import io.swagger.v3.oas.annotations.media.DiscriminatorMapping;
 import io.swagger.client.model.CourseDto;
 import io.swagger.client.model.GroupDto;
 
