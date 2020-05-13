@@ -26,6 +26,11 @@ public class ReviewerProtocol extends NetworkProtocol {
      */
     private List<AssessmentDto> assessments = new ArrayList<>();
     
+    /**
+     * Single assessment.
+     */
+    private AssessmentDto singleAssessment;
+    
     public ReviewerProtocol(String basePath, String courseName) {
         super(basePath, courseName);
         apiAssessments = new AssessmentsApi(apiClient);
@@ -33,7 +38,7 @@ public class ReviewerProtocol extends NetworkProtocol {
     
     /**
      * Getter for the Assessments of an Assignment.
-     * @param assignmentId the id of the Specified assignment.
+     * @param assignmentId the id of the specified assignment.
      * @return List of Assessments.
      * @throws NetworkException when network problems occur.
      */
@@ -47,6 +52,27 @@ public class ReviewerProtocol extends NetworkProtocol {
         }
         
         return assessments;
+    }
+    
+    
+    /**
+     * Getter for one Assessment of an Assignment.
+     * @param assignmentId the id of the specified assignment.
+     * @param assessmentId the id of the specified assessment.
+     * @return the assessment of an assignment.
+     * @throws NetworkException when network problems occur.
+     */
+    public AssessmentDto getAssessmentForAssignment(String assignmentId, String assessmentId) 
+            throws NetworkException {
+        try {
+            singleAssessment = apiAssessments.getAssessmentById(super.getCourseID(), assignmentId, assessmentId);
+        } catch (IllegalArgumentException e) {
+            throw new ServerNotFoundException(e.getMessage(), basePath);
+        } catch (ApiException e) {
+            throw new DataNotFoundException("Assessments for the specified assignement not found", courseName,
+                    DataType.ASSESSMENTS_NOT_FOUND);
+        }
+        return singleAssessment;
     }
     
 }
