@@ -231,22 +231,11 @@ public class NetworkProtocol {
                 assignments.put(dto.getName(), dto.getState());
             }
         } catch (NetworkException e) {
-            // TODO Auto-generated catch block
+            // TODO Auto-generated catch block 
             e.printStackTrace();
         }
         
         return assignments;
     }
-	
-	// temporary main method to test stuff.
-	public static void main(String[] args) {
-	    // remember database is emptied after every commit.
-	    NetworkProtocol nw = new NetworkProtocol("http://147.172.178.30:3000", "java");
-	    try {
-            System.out.println(nw.getCourses(""));
-        } catch (NetworkException e) {
-            e.printStackTrace();
-        }
-	}
 
 }
